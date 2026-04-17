@@ -7,6 +7,8 @@ import {
   Paper,
   Stack,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import { useState } from 'react'
 import { ProductCard } from '../components/ProductCard'
@@ -15,6 +17,8 @@ import { useAuth } from '../context/AuthContext'
 import { useProductsViewModel } from '../viewmodels/useProductsViewModel'
 
 export const DashboardView = () => {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const { user } = useAuth()
   const { myProducts, error, createProduct, updateProduct, deleteProduct } = useProductsViewModel(
     user?.id
@@ -47,7 +51,7 @@ export const DashboardView = () => {
           </Stack>
         </Paper>
       )}
-      <Grid container spacing={2}>
+      <Grid container spacing={{ xs: 1.5, sm: 2 }}>
         {myProducts.map((product) => (
           <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={product.id}>
             <ProductCard
@@ -59,7 +63,13 @@ export const DashboardView = () => {
           </Grid>
         ))}
       </Grid>
-      <Dialog open={Boolean(editingProduct)} onClose={() => setEditingProduct(null)} fullWidth>
+      <Dialog
+        open={Boolean(editingProduct)}
+        onClose={() => setEditingProduct(null)}
+        fullWidth
+        maxWidth="sm"
+        fullScreen={isMobile}
+      >
         <DialogTitle>Modifier un produit</DialogTitle>
         <DialogContent>
           {editingProduct && (

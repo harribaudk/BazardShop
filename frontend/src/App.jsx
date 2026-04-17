@@ -25,7 +25,10 @@ function App() {
   return (
     <>
       <AppNavbar />
-      <Container maxWidth="xl" sx={{ mt: { xs: 2, md: 4 }, mb: 6 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ mt: { xs: 1.5, sm: 2.5, md: 4 }, mb: { xs: 4, md: 6 }, px: { xs: 1.5, sm: 2.5, md: 3 } }}
+      >
         <Routes>
           <Route path="/" element={<HomeView />} />
           <Route path="/login" element={<LoginView />} />
