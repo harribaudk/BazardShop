@@ -12,7 +12,7 @@ export const ProfileView = () => {
   const [file, setFile] = useState(null)
 
   return (
-    <Paper sx={{ p: { xs: 2.5, sm: 4 }, maxWidth: 620, mx: 'auto', borderRadius: 3 }}>
+    <Paper sx={{ p: { xs: 2, sm: 4 }, maxWidth: 620, mx: 'auto', borderRadius: 3 }}>
       <Typography variant="h5" sx={{ mb: 2 }}>
         Mon profil
       </Typography>
@@ -32,11 +32,11 @@ export const ProfileView = () => {
           value={bio}
           onChange={(event) => setBio(event.target.value)}
         />
-        <Button variant="outlined" component="label">
+        <Button variant="outlined" component="label" fullWidth>
           Changer avatar
           <input type="file" hidden accept="image/*" onChange={(event) => setFile(event.target.files?.[0] || null)} />
         </Button>
-        <Button variant="contained" disabled={loading} type="submit" size="large">
+        <Button variant="contained" disabled={loading} type="submit" size="large" fullWidth>
           Sauvegarder
         </Button>
         {message && <Alert severity={message.includes('succes') ? 'success' : 'error'}>{message}</Alert>}

@@ -1,7 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap');
+
 body {
   margin: 0;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background: radial-gradient(circle at top, #eef4ff 0%, #f8fafc 45%, #f4f6f8 100%);
+  background: radial-gradient(circle at top, #eef2ff 0%, #f8fafc 48%, #eef2f7 100%);
 }
 
 #root {
@@ -9,7 +11,7 @@ body {
 }
 
 a {
-  color: #1d4ed8;
+  color: #4338ca;
   text-decoration: none;
 }
 

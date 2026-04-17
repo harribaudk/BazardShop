@@ -37,9 +37,9 @@ export const AppNavbar = () => {
       ]
 
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+    <AppBar position="sticky" elevation={0}>
+      <Toolbar sx={{ py: { xs: 0.2, sm: 0.6 }, px: { xs: 1, sm: 2 } }}>
+        <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: '-0.01em' }}>
           BazardShop
         </Typography>
         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
@@ -56,13 +56,13 @@ export const AppNavbar = () => {
         </Box>
         <IconButton
           color="inherit"
-          sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+          sx={{ display: { xs: 'inline-flex', md: 'none' }, fontSize: 14, px: 1.2 }}
           onClick={() => setOpen(true)}
         >
           Menu
         </IconButton>
         <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
-          <Box sx={{ width: 260 }}>
+          <Box sx={{ width: { xs: 240, sm: 280 } }}>
             <List>
               {links.map((link) => (
                 <ListItemButton

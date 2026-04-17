@@ -8,7 +8,15 @@ export const RegisterView = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '' })
 
   return (
-    <Paper sx={{ p: { xs: 2.5, sm: 4 }, maxWidth: 500, mx: 'auto', borderRadius: 3 }}>
+    <Paper
+      sx={{
+        p: { xs: 2.5, sm: 4 },
+        maxWidth: 500,
+        mx: 'auto',
+        borderRadius: 4,
+        background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+      }}
+    >
       <Typography variant="h5" sx={{ mb: 2 }}>
         Inscription
       </Typography>

@@ -30,7 +30,7 @@ export const ProductForm = ({ initialProduct, onSubmit, submitLabel }) => {
 
   return (
     <Stack component="form" spacing={2} onSubmit={handleSubmit}>
-      <TextField label="Titre" name="title" value={form.title} onChange={handleChange} required />
+      <TextField label="Titre" name="title" value={form.title} onChange={handleChange} required fullWidth />
       <TextField
         label="Description"
         name="description"
@@ -39,6 +39,7 @@ export const ProductForm = ({ initialProduct, onSubmit, submitLabel }) => {
         required
         multiline
         minRows={2}
+        fullWidth
       />
       <TextField
         label="Prix"
@@ -48,8 +49,9 @@ export const ProductForm = ({ initialProduct, onSubmit, submitLabel }) => {
         value={form.price}
         onChange={handleChange}
         required
+        fullWidth
       />
-      <Button variant="outlined" component="label">
+      <Button variant="outlined" component="label" fullWidth>
         Ajouter image/audio/video
         <input
           type="file"
@@ -58,7 +60,7 @@ export const ProductForm = ({ initialProduct, onSubmit, submitLabel }) => {
           onChange={(event) => setFile(event.target.files?.[0] || null)}
         />
       </Button>
-      <Button type="submit" variant="contained">
+      <Button type="submit" variant="contained" fullWidth>
         {submitLabel}
       </Button>
     </Stack>
