@@ -20,6 +20,25 @@ router.get("/", (req, res) => {
   );
 });
 
+router.get("/:id", (req, res) => {
+  db.get(
+    `SELECT p.*, u.name as seller_name
+     FROM products p
+     JOIN users u ON u.id = p.created_by
+     WHERE p.id = ?`,
+    [req.params.id],
+    (error, row) => {
+      if (error) {
+        return res.status(500).json({ message: "Erreur de chargement." });
+      }
+      if (!row) {
+        return res.status(404).json({ message: "Produit introuvable." });
+      }
+      return res.json(row);
+    }
+  );
+});
+
 router.post("/", authMiddleware, (req, res) => {
   const title = String(req.body.title || "").trim();
   const description = String(req.body.description || "").trim();

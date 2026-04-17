@@ -6,6 +6,7 @@ import { LoginView } from './views/LoginView.jsx'
 import { RegisterView } from './views/RegisterView.jsx'
 import { ProfileView } from './views/ProfileView.jsx'
 import { DashboardView } from './views/DashboardView.jsx'
+import { ProductDetailView } from './views/ProductDetailView.jsx'
 import { useAuth } from './context/AuthContext.jsx'
 import './App.css'
 
@@ -31,6 +32,7 @@ function App() {
       >
         <Routes>
           <Route path="/" element={<HomeView />} />
+          <Route path="/products/:productId" element={<ProductDetailView />} />
           <Route path="/login" element={<LoginView />} />
           <Route path="/register" element={<RegisterView />} />
           <Route

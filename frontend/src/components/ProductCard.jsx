@@ -1,4 +1,5 @@
 import { Button, Card, CardActions, CardContent, CardMedia, Chip, Stack, Typography } from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
 import { getFileUrl } from '../services/apiClient'
 
 export const ProductCard = ({ product, canEdit, onEdit, onDelete }) => (
@@ -46,11 +47,21 @@ export const ProductCard = ({ product, canEdit, onEdit, onDelete }) => (
     </CardContent>
     {canEdit && (
       <CardActions sx={{ flexWrap: 'wrap', gap: 1, px: 2, pb: 2 }}>
+        <Button size="small" component={RouterLink} to={`/products/${product.id}`}>
+          Voir produit
+        </Button>
         <Button size="small" onClick={() => onEdit(product)}>
           Modifier
         </Button>
         <Button size="small" color="error" onClick={() => onDelete(product.id)}>
           Supprimer
+        </Button>
+      </CardActions>
+    )}
+    {!canEdit && (
+      <CardActions sx={{ px: 2, pb: 2 }}>
+        <Button size="small" component={RouterLink} to={`/products/${product.id}`}>
+          Voir produit
         </Button>
       </CardActions>
     )}
