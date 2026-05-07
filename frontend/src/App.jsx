@@ -7,6 +7,7 @@ import { RegisterView } from './views/RegisterView.jsx'
 import { ProfileView } from './views/ProfileView.jsx'
 import { DashboardView } from './views/DashboardView.jsx'
 import { ProductDetailView } from './views/ProductDetailView.jsx'
+import { ChatView } from './views/ChatView.jsx'
 import { useAuth } from './context/AuthContext.jsx'
 import './App.css'
 
@@ -48,6 +49,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRoute>
+                <ChatView />
               </ProtectedRoute>
             }
           />

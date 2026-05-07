@@ -28,6 +28,7 @@ export const AppNavbar = () => {
     ? [
         { label: 'Catalogue', to: '/' },
         { label: 'Dashboard', to: '/dashboard' },
+        { label: 'Messages', to: '/chat' },
         { label: user?.name || 'Profil', to: '/profile' },
       ]
     : [

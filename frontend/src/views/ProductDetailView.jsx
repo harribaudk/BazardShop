@@ -9,13 +9,29 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { Link as RouterLink, useParams } from 'react-router-dom'
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 import { getFileUrl } from '../services/apiClient'
+import { useAuth } from '../context/AuthContext'
 import { useProductDetailViewModel } from '../viewmodels/useProductDetailViewModel'
 
 export const ProductDetailView = () => {
   const { productId } = useParams()
   const { product, loading, error } = useProductDetailViewModel(productId)
+  const { token, user } = useAuth()
+  const navigate = useNavigate()
+
+  const handleContactSeller = () => {
+    if (!product) return
+    if (!token) {
+      navigate('/login')
+      return
+    }
+    if (user?.id === product.createdBy) {
+      navigate('/dashboard')
+      return
+    }
+    navigate(`/chat?with=${product.createdBy}`)
+  }
 
   if (loading) {
     return (
@@ -94,8 +110,8 @@ export const ProductDetailView = () => {
             </Typography>
 
             <Stack spacing={1.2} sx={{ mt: 'auto', pt: 1 }}>
-              <Button variant="contained" size="large" fullWidth>
-                Contacter le vendeur
+              <Button variant="contained" size="large" fullWidth onClick={handleContactSeller}>
+                {user?.id === product.createdBy ? 'Gerer ce produit' : 'Contacter le vendeur'}
               </Button>
               <Button variant="outlined" size="large" fullWidth component={RouterLink} to="/">
                 Continuer mes achats
