@@ -1,6 +1,7 @@
 const express = require("express");
 const { db } = require("../db");
 const { authMiddleware } = require("../middleware/auth");
+const { emitToUser } = require("../realtime");
 
 const router = express.Router();
 
@@ -98,12 +99,16 @@ router.post("/conversations/:userId/messages", authMiddleware, (req, res) => {
         if (insertError) {
           return res.status(500).json({ message: "Envoi impossible." });
         }
-        return res.status(201).json({
+        const payload = {
           id: this.lastID,
           sender_id: me,
           receiver_id: other,
           content,
-        });
+          created_at: new Date().toISOString(),
+        };
+        emitToUser(other, "chat:message", payload);
+        emitToUser(me, "chat:message", payload);
+        return res.status(201).json(payload);
       }
     );
   });

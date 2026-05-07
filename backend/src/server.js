@@ -1,5 +1,6 @@
 const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
+const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const { initDb } = require("./db");
@@ -7,6 +8,7 @@ const { authRoutes } = require("./routes/authRoutes");
 const { productRoutes } = require("./routes/productRoutes");
 const { uploadRoutes } = require("./routes/uploadRoutes");
 const { chatRoutes } = require("./routes/chatRoutes");
+const { initRealtime } = require("./realtime");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
@@ -30,6 +32,9 @@ app.use("/api/products", productRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/chat", chatRoutes);
 
-app.listen(PORT, () => {
+const httpServer = http.createServer(app);
+initRealtime(httpServer);
+
+httpServer.listen(PORT, () => {
   console.log(`API ecommerce active sur http://localhost:${PORT}`);
 });
