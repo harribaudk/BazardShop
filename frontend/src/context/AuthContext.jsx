@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { setAuthToken } from '../services/apiClient'
 import { authService } from '../services/authService'
+import { connectSocket, disconnectSocket } from '../services/socketService'
 
 const AuthContext = createContext(null)
 
@@ -14,8 +15,11 @@ export const AuthProvider = ({ children }) => {
     if (!token) {
       setUser(null)
       setLoading(false)
-      return
+      disconnectSocket()
+      return undefined
     }
+
+    connectSocket(token)
 
     authService
       .me()
@@ -25,6 +29,10 @@ export const AuthProvider = ({ children }) => {
         setToken(null)
       })
       .finally(() => setLoading(false))
+
+    return () => {
+      disconnectSocket()
+    }
   }, [token])
 
   const login = (newToken, nextUser = null) => {
