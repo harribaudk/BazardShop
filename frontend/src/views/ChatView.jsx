@@ -126,6 +126,10 @@ export const ChatView = () => {
         gap: 2,
         gridTemplateColumns: { xs: '1fr', md: '340px 1fr' },
         height: { xs: 'calc(100vh - 140px)', md: '78vh' },
+        '@keyframes chatFadeIn': {
+          from: { opacity: 0, transform: 'translateY(6px)' },
+          to: { opacity: 1, transform: 'translateY(0)' },
+        },
       }}
     >
       {showSidebar && (
@@ -191,7 +195,19 @@ export const ChatView = () => {
 
           <Divider />
 
-          <Box sx={{ flexGrow: 1, overflowY: 'auto', px: 1, py: 0.5 }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              overflowY: 'auto',
+              px: 1,
+              py: 0.5,
+              '&::-webkit-scrollbar': { width: 6 },
+              '&::-webkit-scrollbar-thumb': {
+                background: 'rgba(148,163,184,0.5)',
+                borderRadius: 4,
+              },
+            }}
+          >
             <List dense disablePadding>
               {filteredConversations.length === 0 && (
                 <Box sx={{ p: 2, textAlign: 'center' }}>
@@ -275,18 +291,26 @@ export const ChatView = () => {
           }}
         >
           {!activeContact ? (
-            <Box sx={{ m: 'auto', p: 4, textAlign: 'center' }}>
+            <Box
+              sx={{
+                m: 'auto',
+                p: { xs: 3, md: 5 },
+                textAlign: 'center',
+                maxWidth: 420,
+              }}
+            >
               <Box
                 sx={{
-                  width: 72,
-                  height: 72,
+                  width: 96,
+                  height: 96,
                   mx: 'auto',
-                  mb: 2,
+                  mb: 2.5,
                   borderRadius: '50%',
                   display: 'grid',
                   placeItems: 'center',
-                  background: 'linear-gradient(135deg, rgba(79,70,229,0.15), rgba(14,165,233,0.15))',
-                  fontSize: 30,
+                  background: 'linear-gradient(135deg, rgba(79,70,229,0.18), rgba(14,165,233,0.18))',
+                  fontSize: 38,
+                  boxShadow: '0 14px 32px rgba(79,70,229,0.18)',
                 }}
                 aria-hidden
               >
@@ -295,9 +319,21 @@ export const ChatView = () => {
               <Typography variant="h6" fontWeight={700}>
                 Bienvenue dans la messagerie
               </Typography>
-              <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-                Selectionne une conversation existante ou demarre-en une nouvelle.
+              <Typography color="text.secondary" sx={{ mt: 0.6 }}>
+                Discute en direct avec les vendeurs et les acheteurs de BazardShop.
+                Selectionne une conversation a gauche ou demarre-en une nouvelle.
               </Typography>
+              <Stack
+                direction="row"
+                spacing={1}
+                justifyContent="center"
+                sx={{ mt: 2.2, flexWrap: 'wrap' }}
+                useFlexGap
+              >
+                <Chip size="small" color="primary" variant="outlined" label="En direct" />
+                <Chip size="small" variant="outlined" label="Securise" />
+                <Chip size="small" variant="outlined" label="Sans pub" />
+              </Stack>
             </Box>
           ) : (
             <>
@@ -350,6 +386,11 @@ export const ChatView = () => {
                   overflowY: 'auto',
                   background:
                     'linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%)',
+                  '&::-webkit-scrollbar': { width: 6 },
+                  '&::-webkit-scrollbar-thumb': {
+                    background: 'rgba(148,163,184,0.5)',
+                    borderRadius: 4,
+                  },
                 }}
               >
                 {loadingMessages && messages.length === 0 ? (
@@ -416,6 +457,8 @@ export const ChatView = () => {
                                 boxShadow: mine
                                   ? '0 8px 22px rgba(79,70,229,0.28)'
                                   : '0 4px 14px rgba(15,23,42,0.06)',
+                                animation: 'chatFadeIn 0.22s ease both',
+                                wordBreak: 'break-word',
                               }}
                             >
                               <Typography sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.45 }}>
@@ -455,6 +498,7 @@ export const ChatView = () => {
                   p: 1.4,
                   borderTop: '1px solid rgba(148,163,184,0.25)',
                   display: 'flex',
+                  alignItems: 'center',
                   gap: 1,
                   background: '#fff',
                 }}
@@ -466,20 +510,36 @@ export const ChatView = () => {
                   value={draft}
                   onChange={(event) => setDraft(event.target.value)}
                   disabled={sending}
+                  inputProps={{ maxLength: 2000 }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 999,
                       background: '#f8fafc',
+                      pr: 1,
                     },
                   }}
                 />
+                <Box sx={{ minWidth: 44, textAlign: 'right' }}>
+                  <Typography
+                    variant="caption"
+                    color={draft.length > 1800 ? 'error' : 'text.secondary'}
+                  >
+                    {draft.length}/2000
+                  </Typography>
+                </Box>
                 <Button
                   type="submit"
                   variant="contained"
                   disabled={sending || !draft.trim()}
-                  sx={{ borderRadius: 999, px: 2.4 }}
+                  sx={{
+                    borderRadius: 999,
+                    px: 2.6,
+                    py: 1,
+                    background: 'linear-gradient(135deg, #4f46e5, #6366f1)',
+                    boxShadow: '0 6px 18px rgba(79,70,229,0.35)',
+                  }}
                 >
-                  Envoyer
+                  {sending ? 'Envoi...' : 'Envoyer'}
                 </Button>
               </Box>
             </>
