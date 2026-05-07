@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ConversationModel, MessageModel } from '../models/MessageModel'
 import { chatService } from '../services/chatService'
-
-const POLL_INTERVAL_MS = 4000
+import { getSocket } from '../services/socketService'
 
 export const useChatViewModel = (activeUserId) => {
   const [conversations, setConversations] = useState([])
@@ -11,7 +10,6 @@ export const useChatViewModel = (activeUserId) => {
   const [loadingMessages, setLoadingMessages] = useState(false)
   const [error, setError] = useState('')
   const [sending, setSending] = useState(false)
-  const pollRef = useRef(null)
 
   const refreshConversations = useCallback(async () => {
     try {
@@ -55,18 +53,35 @@ export const useChatViewModel = (activeUserId) => {
 
     setLoadingMessages(true)
     refreshMessages(activeUserId).finally(() => setLoadingMessages(false))
-
-    pollRef.current = setInterval(() => {
-      refreshMessages(activeUserId)
-    }, POLL_INTERVAL_MS)
-
-    return () => {
-      if (pollRef.current) {
-        clearInterval(pollRef.current)
-        pollRef.current = null
-      }
-    }
+    return undefined
   }, [activeUserId, refreshMessages])
+
+  useEffect(() => {
+    const socket = getSocket()
+    if (!socket) return undefined
+
+    const handleIncoming = (payload) => {
+      const isForActive =
+        activeUserId &&
+        (payload.sender_id === activeUserId || payload.receiver_id === activeUserId)
+
+      if (isForActive) {
+        setMessages((previous) => {
+          if (previous.some((message) => message.id === payload.id)) {
+            return previous
+          }
+          return [...previous, new MessageModel(payload)]
+        })
+      }
+
+      refreshConversations()
+    }
+
+    socket.on('chat:message', handleIncoming)
+    return () => {
+      socket.off('chat:message', handleIncoming)
+    }
+  }, [activeUserId, refreshConversations])
 
   const sendMessage = async (userId, content) => {
     const trimmed = (content || '').trim()
@@ -74,8 +89,6 @@ export const useChatViewModel = (activeUserId) => {
     setSending(true)
     try {
       await chatService.sendMessage(userId, trimmed)
-      await refreshMessages(userId)
-      await refreshConversations()
     } catch {
       setError("L'envoi a echoue.")
     } finally {
