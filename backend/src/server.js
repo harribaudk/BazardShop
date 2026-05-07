@@ -6,6 +6,7 @@ const { initDb } = require("./db");
 const { authRoutes } = require("./routes/authRoutes");
 const { productRoutes } = require("./routes/productRoutes");
 const { uploadRoutes } = require("./routes/uploadRoutes");
+const { chatRoutes } = require("./routes/chatRoutes");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
@@ -27,6 +28,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.listen(PORT, () => {
   console.log(`API ecommerce active sur http://localhost:${PORT}`);
