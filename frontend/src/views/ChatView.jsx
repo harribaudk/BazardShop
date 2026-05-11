@@ -437,18 +437,28 @@ export const ChatView = () => {
             <Tabs
               value={tab}
               onChange={(_, value) => setTab(value)}
+              variant="fullWidth"
               sx={{
-                mt: 1.4,
-                minHeight: 36,
+                mt: 1.6,
+                minHeight: 44,
+                borderBottom: '1px solid rgba(148, 163, 184, 0.18)',
+                '& .MuiTabs-indicator': {
+                  height: 3,
+                  borderRadius: 2,
+                  background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                },
                 '& .MuiTab-root': {
-                  minHeight: 36,
-                  py: 0.4,
+                  minHeight: 44,
+                  py: 1.1,
+                  px: 1,
                   textTransform: 'none',
                   fontWeight: 600,
-                  fontSize: 13,
+                  fontSize: 13.5,
+                  lineHeight: 1.4,
+                  color: '#64748b',
+                  '&.Mui-selected': { color: 'primary.main' },
                 },
               }}
-              variant="fullWidth"
             >
               <Tab label="Toutes" value="all" />
               <Tab label="Recents" value="recent" />
