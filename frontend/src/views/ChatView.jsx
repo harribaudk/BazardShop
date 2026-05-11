@@ -277,7 +277,12 @@ export const ChatView = () => {
               spacing={1.2}
               sx={{ mb: 1.8 }}
             >
-              <Stack direction="row" alignItems="center" spacing={1.4} sx={{ minWidth: 0 }}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1.4}
+                sx={{ minWidth: 0, flexGrow: 1 }}
+              >
                 <Box
                   sx={{
                     width: 40,
@@ -338,6 +343,8 @@ export const ChatView = () => {
                   sx={{
                     width: 40,
                     height: 40,
+                    ml: 'auto',
+                    flexShrink: 0,
                     borderRadius: 2,
                     color: 'primary.main',
                     background: 'rgba(79, 70, 229, 0.08)',
