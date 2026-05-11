@@ -23,6 +23,7 @@ import {
 } from '@mui/material'
 import AddCommentRoundedIcon from '@mui/icons-material/AddCommentRounded'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
+import ChatBubbleRoundedIcon from '@mui/icons-material/ChatBubbleRounded'
 import DoneAllRoundedIcon from '@mui/icons-material/DoneAllRounded'
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
@@ -273,27 +274,80 @@ export const ChatView = () => {
               direction="row"
               alignItems="center"
               justifyContent="space-between"
-              sx={{ mb: 1.6 }}
+              spacing={1.2}
+              sx={{ mb: 1.8 }}
             >
-              <Box>
-                <Typography
-                  variant="h6"
-                  sx={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em' }}
+              <Stack direction="row" alignItems="center" spacing={1.4} sx={{ minWidth: 0 }}>
+                <Box
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 2,
+                    display: 'grid',
+                    placeItems: 'center',
+                    color: '#fff',
+                    background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                    boxShadow: '0 10px 22px rgba(79, 70, 229, 0.35)',
+                    flexShrink: 0,
+                  }}
+                  aria-hidden
                 >
-                  Messagerie
-                </Typography>
-                <Typography variant="caption" sx={{ color: '#64748b' }}>
-                  {conversations.length} discussion
-                  {conversations.length > 1 ? 's' : ''}
-                </Typography>
-              </Box>
-              <Tooltip title="Nouvelle conversation">
+                  <ChatBubbleRoundedIcon sx={{ fontSize: 20 }} />
+                </Box>
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography
+                    sx={{
+                      fontSize: 18,
+                      fontWeight: 700,
+                      letterSpacing: '-0.01em',
+                      lineHeight: 1.1,
+                      color: '#0f172a',
+                    }}
+                  >
+                    Messagerie
+                  </Typography>
+                  <Stack direction="row" alignItems="center" spacing={0.7} sx={{ mt: 0.4 }}>
+                    <Box
+                      sx={{
+                        width: 7,
+                        height: 7,
+                        borderRadius: '50%',
+                        bgcolor: '#22c55e',
+                        boxShadow: '0 0 0 3px rgba(34, 197, 94, 0.18)',
+                        animation: 'pulseDot 1.8s ease-in-out infinite',
+                      }}
+                    />
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: '#64748b',
+                        fontWeight: 600,
+                        fontSize: 12,
+                        letterSpacing: '0.01em',
+                      }}
+                    >
+                      {conversations.length} discussion
+                      {conversations.length > 1 ? 's' : ''} actives
+                    </Typography>
+                  </Stack>
+                </Box>
+              </Stack>
+              <Tooltip title="Nouvelle conversation" arrow>
                 <IconButton
                   onClick={(event) => setNewAnchorEl(event.currentTarget)}
                   sx={{
-                    bgcolor: 'rgba(79, 70, 229, 0.08)',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 2,
                     color: 'primary.main',
-                    '&:hover': { bgcolor: 'rgba(79, 70, 229, 0.16)' },
+                    background: 'rgba(79, 70, 229, 0.08)',
+                    border: '1px solid rgba(79, 70, 229, 0.16)',
+                    transition: 'transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease',
+                    '&:hover': {
+                      background: 'rgba(79, 70, 229, 0.16)',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 8px 18px rgba(79, 70, 229, 0.22)',
+                    },
                   }}
                 >
                   <AddCommentRoundedIcon fontSize="small" />
