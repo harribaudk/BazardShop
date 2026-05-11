@@ -25,7 +25,6 @@ import AddCommentRoundedIcon from '@mui/icons-material/AddCommentRounded'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import ChatBubbleRoundedIcon from '@mui/icons-material/ChatBubbleRounded'
 import DoneAllRoundedIcon from '@mui/icons-material/DoneAllRounded'
-import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -742,11 +741,6 @@ export const ChatView = () => {
                     </Typography>
                   </Stack>
                 </Box>
-                <Tooltip title="Plus">
-                  <IconButton size="small">
-                    <MoreHorizRoundedIcon />
-                  </IconButton>
-                </Tooltip>
               </Box>
 
               <Box
