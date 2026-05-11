@@ -3,23 +3,30 @@ import {
   Avatar,
   Badge,
   Box,
-  Button,
   Chip,
   CircularProgress,
   Divider,
   IconButton,
-  InputAdornment,
+  InputBase,
   List,
   ListItemButton,
-  ListItemText,
+  Menu,
   MenuItem,
   Paper,
   Stack,
-  TextField,
+  Tab,
+  Tabs,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
+import AddCommentRoundedIcon from '@mui/icons-material/AddCommentRounded'
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
+import DoneAllRoundedIcon from '@mui/icons-material/DoneAllRounded'
+import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded'
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
+import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -27,39 +34,122 @@ import { useChatViewModel } from '../viewmodels/useChatViewModel'
 
 const initialFromName = (name) => (name ? name.charAt(0).toUpperCase() : '?')
 
-const palette = ['#4f46e5', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
-const colorFromId = (id) => palette[Math.abs(Number(id) || 0) % palette.length]
+const AVATAR_PALETTE = [
+  '#6366f1',
+  '#0ea5e9',
+  '#14b8a6',
+  '#f59e0b',
+  '#ef4444',
+  '#a855f7',
+  '#ec4899',
+  '#22c55e',
+]
+const colorFromId = (id) =>
+  AVATAR_PALETTE[Math.abs(Number(id) || 0) % AVATAR_PALETTE.length]
+
+const parseDate = (iso) => (iso ? new Date(iso.endsWith('Z') ? iso : `${iso}Z`) : null)
 
 const formatHour = (iso) => {
-  if (!iso) return ''
-  const date = new Date(iso.endsWith('Z') ? iso : `${iso}Z`)
+  const date = parseDate(iso)
+  if (!date) return ''
   return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
 }
 
+const sameDay = (a, b) =>
+  a &&
+  b &&
+  a.getFullYear() === b.getFullYear() &&
+  a.getMonth() === b.getMonth() &&
+  a.getDate() === b.getDate()
+
 const formatDayLabel = (iso) => {
-  if (!iso) return ''
-  const date = new Date(iso.endsWith('Z') ? iso : `${iso}Z`)
+  const date = parseDate(iso)
+  if (!date) return ''
   const today = new Date()
   const yesterday = new Date()
   yesterday.setDate(today.getDate() - 1)
-  const sameDay = (a, b) =>
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
   if (sameDay(date, today)) return "Aujourd'hui"
   if (sameDay(date, yesterday)) return 'Hier'
-  return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
+  return date.toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  })
 }
 
 const formatRelative = (iso) => {
-  if (!iso) return ''
-  const date = new Date(iso.endsWith('Z') ? iso : `${iso}Z`)
+  const date = parseDate(iso)
+  if (!date) return ''
   const diff = (Date.now() - date.getTime()) / 1000
-  if (diff < 60) return "a l'instant"
-  if (diff < 3600) return `il y a ${Math.floor(diff / 60)} min`
-  if (diff < 86400) return `il y a ${Math.floor(diff / 3600)} h`
+  if (diff < 60) return 'maintenant'
+  if (diff < 3600) return `${Math.floor(diff / 60)} min`
+  if (diff < 86400) return `${Math.floor(diff / 3600)} h`
+  if (diff < 86400 * 7) return `${Math.floor(diff / 86400)} j`
   return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
 }
+
+const Bubble = ({ message, mine, grouped, showTime }) => (
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: mine ? 'flex-end' : 'flex-start',
+      mt: grouped ? 0.3 : 0.9,
+    }}
+  >
+    <Box
+      sx={{
+        position: 'relative',
+        maxWidth: { xs: '85%', sm: '70%', md: '62%' },
+        px: 1.7,
+        py: 1.1,
+        bgcolor: mine ? '#4f46e5' : '#ffffff',
+        color: mine ? '#fff' : '#0f172a',
+        borderRadius: mine
+          ? grouped
+            ? '20px 6px 6px 20px'
+            : '20px 6px 20px 20px'
+          : grouped
+          ? '6px 20px 20px 6px'
+          : '6px 20px 20px 20px',
+        boxShadow: mine
+          ? '0 8px 22px rgba(79, 70, 229, 0.28)'
+          : '0 4px 14px rgba(15, 23, 42, 0.06)',
+        border: mine ? 'none' : '1px solid rgba(148, 163, 184, 0.16)',
+        animation: 'bubbleIn 0.22s ease both',
+        wordBreak: 'break-word',
+      }}
+    >
+      <Typography sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.5, fontSize: 14.5 }}>
+        {message.content}
+      </Typography>
+      {showTime && (
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="flex-end"
+          spacing={0.5}
+          sx={{ mt: 0.4 }}
+        >
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: 11,
+              color: mine ? 'rgba(255,255,255,0.78)' : '#94a3b8',
+            }}
+          >
+            {formatHour(message.createdAt)}
+          </Typography>
+          {mine && (
+            <DoneAllRoundedIcon
+              sx={{ fontSize: 14, color: 'rgba(255,255,255,0.8)' }}
+              aria-hidden
+            />
+          )}
+        </Stack>
+      )}
+    </Box>
+  </Box>
+)
 
 export const ChatView = () => {
   const { user } = useAuth()
@@ -72,7 +162,10 @@ export const ChatView = () => {
   })
   const [draft, setDraft] = useState('')
   const [search, setSearch] = useState('')
+  const [tab, setTab] = useState('all')
+  const [newAnchorEl, setNewAnchorEl] = useState(null)
   const messagesEndRef = useRef(null)
+  const messagesContainerRef = useRef(null)
 
   const {
     conversations,
@@ -95,9 +188,22 @@ export const ChatView = () => {
 
   const filteredConversations = useMemo(() => {
     const term = search.trim().toLowerCase()
-    if (!term) return conversations
-    return conversations.filter((conversation) => conversation.name.toLowerCase().includes(term))
+    let list = conversations
+    if (term) {
+      list = list.filter((conversation) =>
+        conversation.name.toLowerCase().includes(term)
+      )
+    }
+    return list
   }, [conversations, search])
+
+  const availableContacts = useMemo(() => {
+    const term = search.trim().toLowerCase()
+    const ids = new Set(conversations.map((c) => c.userId))
+    return contacts
+      .filter((contact) => !ids.has(contact.id))
+      .filter((contact) => (term ? contact.name.toLowerCase().includes(term) : true))
+  }, [contacts, conversations, search])
 
   useEffect(() => {
     if (activeUserId) {
@@ -116,6 +222,18 @@ export const ChatView = () => {
     setDraft('')
   }
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      handleSend(event)
+    }
+  }
+
+  const handleStartConversation = (contactId) => {
+    setNewAnchorEl(null)
+    setActiveUserId(contactId)
+  }
+
   const showSidebar = !isMobile || !activeUserId
   const showConversation = !isMobile || activeUserId
 
@@ -124,11 +242,16 @@ export const ChatView = () => {
       sx={{
         display: 'grid',
         gap: 2,
-        gridTemplateColumns: { xs: '1fr', md: '340px 1fr' },
-        height: { xs: 'calc(100vh - 140px)', md: '78vh' },
-        '@keyframes chatFadeIn': {
-          from: { opacity: 0, transform: 'translateY(6px)' },
+        gridTemplateColumns: { xs: '1fr', md: '360px 1fr' },
+        height: { xs: 'calc(100vh - 140px)', md: 'calc(100vh - 160px)' },
+        minHeight: 540,
+        '@keyframes bubbleIn': {
+          from: { opacity: 0, transform: 'translateY(4px)' },
           to: { opacity: 1, transform: 'translateY(0)' },
+        },
+        '@keyframes pulseDot': {
+          '0%, 100%': { opacity: 0.4 },
+          '50%': { opacity: 1 },
         },
       }}
     >
@@ -141,56 +264,134 @@ export const ChatView = () => {
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
+            border: '1px solid rgba(148, 163, 184, 0.18)',
+            background: '#ffffff',
           }}
         >
-          <Box sx={{ p: 2, pb: 1.2 }}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.2 }}>
-              <Typography variant="h6" fontWeight={700}>
-                Messages
-              </Typography>
-              <Chip size="small" label={`${conversations.length} discussion${conversations.length > 1 ? 's' : ''}`} />
-            </Stack>
-            <TextField
-              size="small"
-              fullWidth
-              placeholder="Rechercher une conversation"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Box
-                      component="span"
-                      sx={{ fontSize: 18, color: 'text.secondary' }}
-                      aria-hidden
-                    >
-                      ⌕
-                    </Box>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-            />
-            <TextField
-              select
-              size="small"
-              fullWidth
-              value=""
-              onChange={(event) => {
-                const id = Number(event.target.value)
-                if (id) setActiveUserId(id)
-              }}
-              sx={{ mt: 1.2, '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+          <Box sx={{ p: 2.2, pb: 1.4 }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ mb: 1.6 }}
             >
-              <MenuItem value="" disabled>
-                Demarrer avec un utilisateur
-              </MenuItem>
-              {contacts.map((contact) => (
-                <MenuItem key={contact.id} value={contact.id}>
-                  {contact.name}
-                </MenuItem>
-              ))}
-            </TextField>
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em' }}
+                >
+                  Messagerie
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#64748b' }}>
+                  {conversations.length} discussion
+                  {conversations.length > 1 ? 's' : ''}
+                </Typography>
+              </Box>
+              <Tooltip title="Nouvelle conversation">
+                <IconButton
+                  onClick={(event) => setNewAnchorEl(event.currentTarget)}
+                  sx={{
+                    bgcolor: 'rgba(79, 70, 229, 0.08)',
+                    color: 'primary.main',
+                    '&:hover': { bgcolor: 'rgba(79, 70, 229, 0.16)' },
+                  }}
+                >
+                  <AddCommentRoundedIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                anchorEl={newAnchorEl}
+                open={Boolean(newAnchorEl)}
+                onClose={() => setNewAnchorEl(null)}
+                PaperProps={{
+                  sx: {
+                    mt: 1,
+                    minWidth: 260,
+                    borderRadius: 2,
+                    boxShadow: '0 18px 40px rgba(15, 23, 42, 0.18)',
+                  },
+                }}
+              >
+                {availableContacts.length === 0 && (
+                  <MenuItem disabled>Aucun contact disponible</MenuItem>
+                )}
+                {availableContacts.map((contact) => (
+                  <MenuItem
+                    key={contact.id}
+                    onClick={() => handleStartConversation(contact.id)}
+                  >
+                    <Avatar
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        mr: 1.2,
+                        bgcolor: colorFromId(contact.id),
+                        fontSize: 13,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {initialFromName(contact.name)}
+                    </Avatar>
+                    <Box>
+                      <Typography fontSize={14} fontWeight={600}>
+                        {contact.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {contact.email}
+                      </Typography>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Stack>
+
+            <Paper
+              elevation={0}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                px: 1.6,
+                py: 0.6,
+                borderRadius: 999,
+                bgcolor: '#f1f5f9',
+                border: '1px solid transparent',
+                transition: 'border-color 0.2s ease, background 0.2s ease',
+                '&:focus-within': {
+                  borderColor: 'rgba(79,70,229,0.5)',
+                  bgcolor: '#fff',
+                },
+              }}
+            >
+              <SearchRoundedIcon fontSize="small" sx={{ color: '#94a3b8' }} />
+              <InputBase
+                fullWidth
+                placeholder="Rechercher"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                sx={{ fontSize: 14 }}
+              />
+            </Paper>
+
+            <Tabs
+              value={tab}
+              onChange={(_, value) => setTab(value)}
+              sx={{
+                mt: 1.4,
+                minHeight: 36,
+                '& .MuiTab-root': {
+                  minHeight: 36,
+                  py: 0.4,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  fontSize: 13,
+                },
+              }}
+              variant="fullWidth"
+            >
+              <Tab label="Toutes" value="all" />
+              <Tab label="Recents" value="recent" />
+            </Tabs>
           </Box>
 
           <Divider />
@@ -200,21 +401,21 @@ export const ChatView = () => {
               flexGrow: 1,
               overflowY: 'auto',
               px: 1,
-              py: 0.5,
+              py: 0.8,
               '&::-webkit-scrollbar': { width: 6 },
               '&::-webkit-scrollbar-thumb': {
-                background: 'rgba(148,163,184,0.5)',
+                background: 'rgba(148,163,184,0.4)',
                 borderRadius: 4,
               },
             }}
           >
             <List dense disablePadding>
               {filteredConversations.length === 0 && (
-                <Box sx={{ p: 2, textAlign: 'center' }}>
+                <Box sx={{ p: 3, textAlign: 'center' }}>
                   <Typography variant="body2" color="text.secondary">
                     {conversations.length === 0
-                      ? 'Aucune conversation. Selectionne un utilisateur pour commencer.'
-                      : 'Aucun resultat.'}
+                      ? 'Aucune conversation. Clique sur + pour en demarrer une.'
+                      : 'Aucun resultat pour cette recherche.'}
                   </Typography>
                 </Box>
               )}
@@ -226,27 +427,51 @@ export const ChatView = () => {
                     selected={selected}
                     onClick={() => setActiveUserId(conversation.userId)}
                     sx={{
+                      position: 'relative',
                       borderRadius: 2,
-                      mb: 0.5,
-                      px: 1.2,
-                      py: 1.1,
+                      mb: 0.4,
+                      px: 1.4,
+                      py: 1.2,
+                      gap: 1.4,
+                      alignItems: 'center',
                       transition: 'background 0.2s ease',
                       '&.Mui-selected': {
-                        background: 'rgba(79,70,229,0.08)',
+                        background: 'rgba(79, 70, 229, 0.06)',
+                        '&:hover': { background: 'rgba(79, 70, 229, 0.09)' },
                       },
+                      '&::before': selected
+                        ? {
+                            content: '""',
+                            position: 'absolute',
+                            left: 0,
+                            top: 8,
+                            bottom: 8,
+                            width: 3,
+                            borderRadius: 2,
+                            background: 'linear-gradient(180deg, #6366f1, #4f46e5)',
+                          }
+                        : undefined,
                     }}
                   >
                     <Badge
                       overlap="circular"
                       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                      variant="dot"
-                      color="success"
-                      sx={{ mr: 1.4 }}
+                      badgeContent={
+                        <Box
+                          sx={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: '50%',
+                            bgcolor: '#22c55e',
+                            border: '2px solid #fff',
+                          }}
+                        />
+                      }
                     >
                       <Avatar
                         sx={{
-                          width: 38,
-                          height: 38,
+                          width: 42,
+                          height: 42,
                           bgcolor: colorFromId(conversation.userId),
                           fontWeight: 700,
                         }}
@@ -254,23 +479,36 @@ export const ChatView = () => {
                         {initialFromName(conversation.name)}
                       </Avatar>
                     </Badge>
-                    <ListItemText
-                      primary={
-                        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
-                          <Typography fontWeight={selected ? 700 : 600} noWrap>
-                            {conversation.name}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {formatRelative(conversation.lastMessageAt)}
-                          </Typography>
-                        </Stack>
-                      }
-                      secondary={
-                        <Typography variant="body2" color="text.secondary" noWrap>
-                          {conversation.lastMessage || 'Aucun message'}
+                    <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={1}
+                      >
+                        <Typography
+                          fontSize={14.5}
+                          fontWeight={selected ? 700 : 600}
+                          noWrap
+                          sx={{ color: '#0f172a' }}
+                        >
+                          {conversation.name}
                         </Typography>
-                      }
-                    />
+                        <Typography
+                          variant="caption"
+                          sx={{ color: '#94a3b8', whiteSpace: 'nowrap' }}
+                        >
+                          {formatRelative(conversation.lastMessageAt)}
+                        </Typography>
+                      </Stack>
+                      <Typography
+                        variant="body2"
+                        noWrap
+                        sx={{ color: '#64748b', fontSize: 13, mt: 0.1 }}
+                      >
+                        {conversation.lastMessage || 'Demarrez la conversation'}
+                      </Typography>
+                    </Box>
                   </ListItemButton>
                 )
               })}
@@ -288,6 +526,8 @@ export const ChatView = () => {
             flexDirection: 'column',
             height: '100%',
             overflow: 'hidden',
+            border: '1px solid rgba(148, 163, 184, 0.18)',
+            background: '#ffffff',
           }}
         >
           {!activeContact ? (
@@ -296,41 +536,49 @@ export const ChatView = () => {
                 m: 'auto',
                 p: { xs: 3, md: 5 },
                 textAlign: 'center',
-                maxWidth: 420,
+                maxWidth: 460,
               }}
             >
               <Box
                 sx={{
-                  width: 96,
-                  height: 96,
+                  width: 110,
+                  height: 110,
                   mx: 'auto',
                   mb: 2.5,
-                  borderRadius: '50%',
+                  borderRadius: '32px',
                   display: 'grid',
                   placeItems: 'center',
-                  background: 'linear-gradient(135deg, rgba(79,70,229,0.18), rgba(14,165,233,0.18))',
-                  fontSize: 38,
-                  boxShadow: '0 14px 32px rgba(79,70,229,0.18)',
+                  background:
+                    'linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(14,165,233,0.18) 100%)',
+                  boxShadow: '0 18px 40px rgba(79,70,229,0.18)',
                 }}
                 aria-hidden
               >
-                ✉
+                <AddCommentRoundedIcon sx={{ fontSize: 48, color: '#4f46e5' }} />
               </Box>
-              <Typography variant="h6" fontWeight={700}>
+              <Typography
+                variant="h5"
+                sx={{ fontWeight: 700, mb: 0.6, letterSpacing: '-0.01em' }}
+              >
                 Bienvenue dans la messagerie
               </Typography>
-              <Typography color="text.secondary" sx={{ mt: 0.6 }}>
-                Discute en direct avec les vendeurs et les acheteurs de BazardShop.
-                Selectionne une conversation a gauche ou demarre-en une nouvelle.
+              <Typography color="text.secondary" sx={{ mb: 2.5 }}>
+                Echange en direct avec les vendeurs et acheteurs de BazardShop.
+                Selectionne une conversation a gauche, ou demarres-en une nouvelle.
               </Typography>
               <Stack
                 direction="row"
                 spacing={1}
                 justifyContent="center"
-                sx={{ mt: 2.2, flexWrap: 'wrap' }}
+                sx={{ flexWrap: 'wrap' }}
                 useFlexGap
               >
-                <Chip size="small" color="primary" variant="outlined" label="En direct" />
+                <Chip
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                  label="Temps reel"
+                />
                 <Chip size="small" variant="outlined" label="Securise" />
                 <Chip size="small" variant="outlined" label="Sans pub" />
               </Stack>
@@ -339,25 +587,38 @@ export const ChatView = () => {
             <>
               <Box
                 sx={{
-                  px: { xs: 1.5, sm: 2.2 },
+                  px: { xs: 1.8, sm: 2.4 },
                   py: 1.6,
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1.4,
-                  background: 'linear-gradient(180deg, #ffffff, #f8fafc)',
-                  borderBottom: '1px solid rgba(148,163,184,0.25)',
+                  borderBottom: '1px solid rgba(148, 163, 184, 0.18)',
+                  background: '#ffffff',
                 }}
               >
                 {isMobile && (
-                  <IconButton size="small" onClick={() => setActiveUserId(null)} aria-label="Retour">
-                    ←
+                  <IconButton
+                    size="small"
+                    onClick={() => setActiveUserId(null)}
+                    aria-label="Retour"
+                  >
+                    <ArrowBackRoundedIcon fontSize="small" />
                   </IconButton>
                 )}
                 <Badge
                   overlap="circular"
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                  variant="dot"
-                  color="success"
+                  badgeContent={
+                    <Box
+                      sx={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: '50%',
+                        bgcolor: '#22c55e',
+                        border: '2px solid #fff',
+                      }}
+                    />
+                  }
                 >
                   <Avatar
                     sx={{
@@ -369,26 +630,43 @@ export const ChatView = () => {
                   </Avatar>
                 </Badge>
                 <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-                  <Typography fontWeight={700} noWrap>
+                  <Typography fontWeight={700} noWrap sx={{ fontSize: 15.5 }}>
                     {activeContact.name}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    En ligne sur BazardShop
-                  </Typography>
+                  <Stack direction="row" alignItems="center" spacing={0.7}>
+                    <Box
+                      sx={{
+                        width: 7,
+                        height: 7,
+                        borderRadius: '50%',
+                        bgcolor: '#22c55e',
+                        animation: 'pulseDot 1.8s ease-in-out infinite',
+                      }}
+                    />
+                    <Typography variant="caption" sx={{ color: '#64748b' }}>
+                      Actif maintenant
+                    </Typography>
+                  </Stack>
                 </Box>
+                <Tooltip title="Plus">
+                  <IconButton size="small">
+                    <MoreHorizRoundedIcon />
+                  </IconButton>
+                </Tooltip>
               </Box>
 
               <Box
+                ref={messagesContainerRef}
                 sx={{
                   flexGrow: 1,
-                  px: { xs: 1.4, sm: 2.4 },
-                  py: 2,
+                  px: { xs: 1.6, sm: 3 },
+                  py: 2.4,
                   overflowY: 'auto',
                   background:
-                    'linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%)',
+                    'radial-gradient(at top, #f8fafc 0%, #eef2f7 60%, #e2e8f0 100%)',
                   '&::-webkit-scrollbar': { width: 6 },
                   '&::-webkit-scrollbar-thumb': {
-                    background: 'rgba(148,163,184,0.5)',
+                    background: 'rgba(148,163,184,0.4)',
                     borderRadius: 4,
                   },
                 }}
@@ -398,85 +676,91 @@ export const ChatView = () => {
                     <CircularProgress size={24} />
                   </Box>
                 ) : (
-                  <Stack spacing={1.2}>
+                  <Stack spacing={0}>
                     {messages.length === 0 && (
-                      <Typography color="text.secondary" textAlign="center" sx={{ mt: 4 }}>
-                        Aucun message pour le moment. Lance la conversation !
-                      </Typography>
+                      <Box
+                        sx={{
+                          textAlign: 'center',
+                          color: '#64748b',
+                          mt: 4,
+                        }}
+                      >
+                        <Typography>Aucun message pour le moment.</Typography>
+                        <Typography variant="body2">
+                          Envoie un premier message pour lancer la conversation.
+                        </Typography>
+                      </Box>
                     )}
                     {messages.map((message, index) => {
                       const mine = message.senderId === user?.id
                       const previous = messages[index - 1]
+                      const next = messages[index + 1]
+                      const previousDate = parseDate(previous?.createdAt)
+                      const currentDate = parseDate(message.createdAt)
                       const showDayDivider =
                         !previous ||
-                        formatDayLabel(previous.createdAt) !== formatDayLabel(message.createdAt)
+                        !sameDay(previousDate, currentDate)
+                      const grouped =
+                        previous &&
+                        previous.senderId === message.senderId &&
+                        !showDayDivider &&
+                        currentDate &&
+                        previousDate &&
+                        currentDate.getTime() - previousDate.getTime() < 60_000
+                      const isLastOfGroup =
+                        !next ||
+                        next.senderId !== message.senderId ||
+                        (parseDate(next.createdAt) &&
+                          parseDate(next.createdAt).getTime() -
+                            currentDate.getTime() >
+                            60_000)
                       return (
                         <Box key={message.id}>
                           {showDayDivider && (
-                            <Box sx={{ display: 'flex', justifyContent: 'center', my: 1.4 }}>
-                              <Chip
-                                size="small"
-                                label={formatDayLabel(message.createdAt)}
-                                sx={{ background: 'rgba(15,23,42,0.06)', color: 'text.secondary' }}
-                              />
-                            </Box>
-                          )}
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              justifyContent: mine ? 'flex-end' : 'flex-start',
-                              alignItems: 'flex-end',
-                              gap: 1,
-                            }}
-                          >
-                            {!mine && (
-                              <Avatar
-                                sx={{
-                                  width: 28,
-                                  height: 28,
-                                  bgcolor: colorFromId(message.senderId),
-                                  fontSize: 13,
-                                  fontWeight: 700,
-                                }}
-                              >
-                                {initialFromName(activeContact.name)}
-                              </Avatar>
-                            )}
                             <Box
                               sx={{
-                                maxWidth: { xs: '82%', sm: '70%' },
-                                px: 1.7,
-                                py: 1.05,
-                                borderRadius: mine
-                                  ? '18px 18px 4px 18px'
-                                  : '18px 18px 18px 4px',
-                                background: mine
-                                  ? 'linear-gradient(135deg, #4f46e5, #6366f1)'
-                                  : '#ffffff',
-                                color: mine ? '#fff' : 'text.primary',
-                                boxShadow: mine
-                                  ? '0 8px 22px rgba(79,70,229,0.28)'
-                                  : '0 4px 14px rgba(15,23,42,0.06)',
-                                animation: 'chatFadeIn 0.22s ease both',
-                                wordBreak: 'break-word',
+                                display: 'flex',
+                                alignItems: 'center',
+                                my: 2.4,
+                                gap: 1.4,
                               }}
                             >
-                              <Typography sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.45 }}>
-                                {message.content}
-                              </Typography>
+                              <Box
+                                sx={{
+                                  flexGrow: 1,
+                                  height: 1,
+                                  background: 'rgba(148,163,184,0.25)',
+                                }}
+                              />
                               <Typography
                                 variant="caption"
                                 sx={{
-                                  display: 'block',
-                                  mt: 0.5,
-                                  textAlign: 'right',
-                                  opacity: mine ? 0.85 : 0.6,
+                                  px: 1.4,
+                                  py: 0.4,
+                                  borderRadius: 999,
+                                  bgcolor: '#ffffff',
+                                  color: '#64748b',
+                                  fontWeight: 600,
+                                  border: '1px solid rgba(148,163,184,0.22)',
                                 }}
                               >
-                                {formatHour(message.createdAt)}
+                                {formatDayLabel(message.createdAt)}
                               </Typography>
+                              <Box
+                                sx={{
+                                  flexGrow: 1,
+                                  height: 1,
+                                  background: 'rgba(148,163,184,0.25)',
+                                }}
+                              />
                             </Box>
-                          </Box>
+                          )}
+                          <Bubble
+                            message={message}
+                            mine={mine}
+                            grouped={grouped}
+                            showTime={isLastOfGroup}
+                          />
                         </Box>
                       )
                     })}
@@ -486,7 +770,7 @@ export const ChatView = () => {
               </Box>
 
               {error && (
-                <Alert severity="error" sx={{ mx: 1.5, mb: 1 }}>
+                <Alert severity="error" sx={{ mx: 1.6, mb: 1, borderRadius: 2 }}>
                   {error}
                 </Alert>
               )}
@@ -495,52 +779,88 @@ export const ChatView = () => {
                 component="form"
                 onSubmit={handleSend}
                 sx={{
-                  p: 1.4,
-                  borderTop: '1px solid rgba(148,163,184,0.25)',
+                  p: 1.6,
+                  borderTop: '1px solid rgba(148, 163, 184, 0.2)',
                   display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
+                  alignItems: 'flex-end',
+                  gap: 1.2,
                   background: '#fff',
                 }}
               >
-                <TextField
-                  fullWidth
-                  size="small"
-                  placeholder="Ecris un message..."
-                  value={draft}
-                  onChange={(event) => setDraft(event.target.value)}
-                  disabled={sending}
-                  inputProps={{ maxLength: 2000 }}
+                <Paper
+                  elevation={0}
                   sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 999,
-                      background: '#f8fafc',
-                      pr: 1,
+                    flexGrow: 1,
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    gap: 1,
+                    px: 1.8,
+                    py: 0.9,
+                    borderRadius: 4,
+                    bgcolor: '#f8fafc',
+                    border: '1px solid transparent',
+                    transition: 'border-color 0.2s ease, background 0.2s ease',
+                    '&:focus-within': {
+                      borderColor: 'rgba(79,70,229,0.4)',
+                      bgcolor: '#fff',
                     },
                   }}
-                />
-                <Box sx={{ minWidth: 44, textAlign: 'right' }}>
+                >
+                  <InputBase
+                    fullWidth
+                    multiline
+                    maxRows={5}
+                    placeholder="Ecris un message..."
+                    value={draft}
+                    onChange={(event) => setDraft(event.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={sending}
+                    inputProps={{ maxLength: 2000 }}
+                    sx={{ fontSize: 14.5, lineHeight: 1.5 }}
+                  />
                   <Typography
                     variant="caption"
-                    color={draft.length > 1800 ? 'error' : 'text.secondary'}
+                    sx={{
+                      color: draft.length > 1800 ? 'error.main' : '#94a3b8',
+                      fontSize: 11,
+                      lineHeight: '20px',
+                      whiteSpace: 'nowrap',
+                    }}
                   >
                     {draft.length}/2000
                   </Typography>
-                </Box>
-                <Button
+                </Paper>
+                <IconButton
                   type="submit"
-                  variant="contained"
                   disabled={sending || !draft.trim()}
                   sx={{
-                    borderRadius: 999,
-                    px: 2.6,
-                    py: 1,
-                    background: 'linear-gradient(135deg, #4f46e5, #6366f1)',
-                    boxShadow: '0 6px 18px rgba(79,70,229,0.35)',
+                    width: 46,
+                    height: 46,
+                    color: '#fff',
+                    background:
+                      'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                    boxShadow: '0 10px 24px rgba(79, 70, 229, 0.35)',
+                    transition: 'transform 0.15s ease, box-shadow 0.2s ease',
+                    '&:hover': {
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 14px 28px rgba(79, 70, 229, 0.45)',
+                      background:
+                        'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                    },
+                    '&.Mui-disabled': {
+                      background: '#cbd5e1',
+                      color: '#fff',
+                      boxShadow: 'none',
+                    },
                   }}
+                  aria-label="Envoyer"
                 >
-                  {sending ? 'Envoi...' : 'Envoyer'}
-                </Button>
+                  {sending ? (
+                    <CircularProgress size={18} sx={{ color: '#fff' }} />
+                  ) : (
+                    <SendRoundedIcon fontSize="small" />
+                  )}
+                </IconButton>
               </Box>
             </>
           )}
