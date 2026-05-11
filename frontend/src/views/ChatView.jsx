@@ -311,28 +311,35 @@ export const ChatView = () => {
                   >
                     Messagerie
                   </Typography>
-                  <Stack direction="row" alignItems="center" spacing={0.7} sx={{ mt: 0.4 }}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={0.8}
+                    sx={{ mt: 0.5, lineHeight: 1 }}
+                  >
                     <Box
                       sx={{
-                        width: 7,
-                        height: 7,
+                        width: 8,
+                        height: 8,
                         borderRadius: '50%',
                         bgcolor: '#22c55e',
                         boxShadow: '0 0 0 3px rgba(34, 197, 94, 0.18)',
                         animation: 'pulseDot 1.8s ease-in-out infinite',
+                        flexShrink: 0,
                       }}
                     />
                     <Typography
-                      variant="caption"
+                      component="span"
                       sx={{
                         color: '#64748b',
                         fontWeight: 600,
                         fontSize: 12,
+                        lineHeight: 1,
                         letterSpacing: '0.01em',
                       }}
                     >
                       {conversations.length} discussion
-                      {conversations.length > 1 ? 's' : ''} actives
+                      {conversations.length > 1 ? 's actives' : ' active'}
                     </Typography>
                   </Stack>
                 </Box>
@@ -704,17 +711,33 @@ export const ChatView = () => {
                   <Typography fontWeight={700} noWrap sx={{ fontSize: 15.5 }}>
                     {activeContact.name}
                   </Typography>
-                  <Stack direction="row" alignItems="center" spacing={0.7}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={0.8}
+                    sx={{ mt: 0.4, lineHeight: 1 }}
+                  >
                     <Box
                       sx={{
-                        width: 7,
-                        height: 7,
+                        width: 8,
+                        height: 8,
                         borderRadius: '50%',
                         bgcolor: '#22c55e',
+                        boxShadow: '0 0 0 3px rgba(34, 197, 94, 0.18)',
                         animation: 'pulseDot 1.8s ease-in-out infinite',
+                        flexShrink: 0,
                       }}
                     />
-                    <Typography variant="caption" sx={{ color: '#64748b' }}>
+                    <Typography
+                      component="span"
+                      sx={{
+                        color: '#64748b',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        lineHeight: 1,
+                        letterSpacing: '0.01em',
+                      }}
+                    >
                       Actif maintenant
                     </Typography>
                   </Stack>
