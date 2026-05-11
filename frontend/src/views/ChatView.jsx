@@ -259,7 +259,7 @@ export const ChatView = () => {
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 3,
+            borderRadius: '20px',
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
@@ -598,7 +598,7 @@ export const ChatView = () => {
         <Paper
           elevation={0}
           sx={{
-            borderRadius: 3,
+            borderRadius: '20px',
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
