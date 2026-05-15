@@ -75,7 +75,7 @@ router.post("/login", (req, res) => {
 
 router.get("/me", authMiddleware, (req, res) => {
   db.get(
-    "SELECT id, name, email, bio, avatar_url FROM users WHERE id = ?",
+    "SELECT id, name, email, bio, avatar_url, created_at FROM users WHERE id = ?",
     [req.user.id],
     (error, user) => {
       if (error || !user) {

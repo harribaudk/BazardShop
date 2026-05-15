@@ -11,18 +11,12 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export const AppNavbar = () => {
-  const { token, user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { token, user } = useAuth()
   const [open, setOpen] = useState(false)
-
-  const onLogout = () => {
-    logout()
-    navigate('/')
-  }
 
   const links = token
     ? [
@@ -49,11 +43,6 @@ export const AppNavbar = () => {
               {link.label}
             </Button>
           ))}
-          {token && (
-            <Button color="inherit" onClick={onLogout}>
-              Deconnexion
-            </Button>
-          )}
         </Box>
         <IconButton
           color="inherit"
@@ -75,16 +64,6 @@ export const AppNavbar = () => {
                   <ListItemText primary={link.label} />
                 </ListItemButton>
               ))}
-              {token && (
-                <ListItemButton
-                  onClick={() => {
-                    setOpen(false)
-                    onLogout()
-                  }}
-                >
-                  <ListItemText primary="Deconnexion" />
-                </ListItemButton>
-              )}
             </List>
           </Box>
         </Drawer>
