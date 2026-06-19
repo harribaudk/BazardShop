@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Box, CircularProgress, Container } from '@mui/material'
+import { AppFooter } from './components/AppFooter.jsx'
 import { AppNavbar } from './components/AppNavbar.jsx'
 import { HomeView } from './views/HomeView.jsx'
 import { LoginView } from './views/LoginView.jsx'
@@ -25,11 +26,17 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <>
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <AppNavbar />
       <Container
         maxWidth="xl"
-        sx={{ mt: { xs: 1.5, sm: 2.5, md: 4 }, mb: { xs: 4, md: 6 }, px: { xs: 1.5, sm: 2.5, md: 3 } }}
+        component="main"
+        sx={{
+          flexGrow: 1,
+          mt: { xs: 2, sm: 3, md: 4 },
+          mb: { xs: 2, md: 3 },
+          px: { xs: 1.5, sm: 2.5, md: 3 },
+        }}
       >
         <Routes>
           <Route path="/" element={<HomeView />} />
@@ -62,7 +69,8 @@ function App() {
           />
         </Routes>
       </Container>
-    </>
+      <AppFooter />
+    </Box>
   )
 }
 

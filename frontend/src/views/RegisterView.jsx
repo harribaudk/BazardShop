@@ -1,29 +1,27 @@
-import { Alert, Box, Button, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Alert, Box, Button, Stack, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
+import { AuthLayout } from '../components/AuthLayout'
 import { useAuthViewModel } from '../viewmodels/useAuthViewModel'
+import { brand } from '../theme/tokens'
 
 export const RegisterView = () => {
   const { loading, error, authenticate } = useAuthViewModel()
   const [form, setForm] = useState({ name: '', email: '', password: '' })
 
   return (
-    <Paper
-      sx={{
-        p: { xs: 2.5, sm: 4 },
-        maxWidth: 500,
-        mx: 'auto',
-        borderRadius: 4,
-        background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
-      }}
+    <AuthLayout
+      title="Inscription"
+      subtitle="Creez votre compte et commencez a vendre en quelques minutes."
     >
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Inscription
-      </Typography>
-      <Stack component="form" spacing={2} onSubmit={(event) => {
-        event.preventDefault()
-        authenticate('register', form)
-      }}>
+      <Stack
+        component="form"
+        spacing={2.2}
+        onSubmit={(event) => {
+          event.preventDefault()
+          authenticate('register', form)
+        }}
+      >
         <TextField
           label="Nom"
           value={form.name}
@@ -46,17 +44,26 @@ export const RegisterView = () => {
           onChange={(event) => setForm({ ...form, password: event.target.value })}
           required
           fullWidth
+          helperText="Minimum 6 caracteres"
         />
         {error && <Alert severity="error">{error}</Alert>}
-        <Button variant="contained" disabled={loading} type="submit" size="large">
-          Creer mon compte
+        <Button variant="contained" disabled={loading} type="submit" size="large" fullWidth>
+          {loading ? 'Creation...' : 'Creer mon compte'}
         </Button>
         <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="body2">
-            Deja un compte ? <RouterLink to="/login">Connecte-toi</RouterLink>
+          <Typography variant="body2" sx={{ color: brand.textMuted }}>
+            Deja un compte ?{' '}
+            <Typography
+              component={RouterLink}
+              to="/login"
+              variant="body2"
+              sx={{ color: brand.primary, fontWeight: 700 }}
+            >
+              Connecte-toi
+            </Typography>
           </Typography>
         </Box>
       </Stack>
-    </Paper>
+    </AuthLayout>
   )
 }

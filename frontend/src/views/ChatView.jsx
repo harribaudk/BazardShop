@@ -31,21 +31,12 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useChatViewModel } from '../viewmodels/useChatViewModel'
+import { avatarPalette, brand } from '../theme/tokens'
 
 const initialFromName = (name) => (name ? name.charAt(0).toUpperCase() : '?')
 
-const AVATAR_PALETTE = [
-  '#6366f1',
-  '#0ea5e9',
-  '#14b8a6',
-  '#f59e0b',
-  '#ef4444',
-  '#a855f7',
-  '#ec4899',
-  '#22c55e',
-]
 const colorFromId = (id) =>
-  AVATAR_PALETTE[Math.abs(Number(id) || 0) % AVATAR_PALETTE.length]
+  avatarPalette[Math.abs(Number(id) || 0) % avatarPalette.length]
 
 const parseDate = (iso) => (iso ? new Date(iso.endsWith('Z') ? iso : `${iso}Z`) : null)
 
@@ -102,7 +93,7 @@ const Bubble = ({ message, mine, grouped, showTime }) => (
         maxWidth: { xs: '85%', sm: '70%', md: '62%' },
         px: 1.7,
         py: 1.1,
-        bgcolor: mine ? '#4f46e5' : '#ffffff',
+        bgcolor: mine ? brand.primary : '#ffffff',
         color: mine ? '#fff' : '#0f172a',
         borderRadius: mine
           ? grouped
@@ -112,7 +103,7 @@ const Bubble = ({ message, mine, grouped, showTime }) => (
           ? '6px 20px 20px 6px'
           : '6px 20px 20px 20px',
         boxShadow: mine
-          ? '0 8px 22px rgba(79, 70, 229, 0.28)'
+          ? brand.shadows.primary
           : '0 4px 14px rgba(15, 23, 42, 0.06)',
         border: mine ? 'none' : '1px solid rgba(148, 163, 184, 0.16)',
         animation: 'bubbleIn 0.22s ease both',
@@ -290,8 +281,8 @@ export const ChatView = () => {
                     display: 'grid',
                     placeItems: 'center',
                     color: '#fff',
-                    background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                    boxShadow: '0 10px 22px rgba(79, 70, 229, 0.35)',
+                    background: brand.gradients.primary,
+                    boxShadow: brand.shadows.primary,
                     flexShrink: 0,
                   }}
                   aria-hidden
@@ -353,13 +344,13 @@ export const ChatView = () => {
                     flexShrink: 0,
                     borderRadius: 2,
                     color: 'primary.main',
-                    background: 'rgba(79, 70, 229, 0.08)',
-                    border: '1px solid rgba(79, 70, 229, 0.16)',
+                    background: brand.primaryMuted,
+                    border: `1px solid rgba(13, 148, 136, 0.2)`,
                     transition: 'transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease',
                     '&:hover': {
-                      background: 'rgba(79, 70, 229, 0.16)',
+                      background: 'rgba(13, 148, 136, 0.16)',
                       transform: 'translateY(-1px)',
-                      boxShadow: '0 8px 18px rgba(79, 70, 229, 0.22)',
+                      boxShadow: brand.shadows.primary,
                     },
                   }}
                 >
@@ -425,7 +416,7 @@ export const ChatView = () => {
                 border: '1px solid transparent',
                 transition: 'border-color 0.2s ease, background 0.2s ease',
                 '&:focus-within': {
-                  borderColor: 'rgba(79,70,229,0.5)',
+                  borderColor: 'rgba(13, 148, 136, 0.45)',
                   bgcolor: '#fff',
                 },
               }}
@@ -451,7 +442,7 @@ export const ChatView = () => {
                 '& .MuiTabs-indicator': {
                   height: 3,
                   borderRadius: 2,
-                  background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                  background: brand.gradients.primary,
                 },
                 '& .MuiTab-root': {
                   minHeight: 44,
@@ -513,8 +504,8 @@ export const ChatView = () => {
                       alignItems: 'center',
                       transition: 'background 0.2s ease',
                       '&.Mui-selected': {
-                        background: 'rgba(79, 70, 229, 0.06)',
-                        '&:hover': { background: 'rgba(79, 70, 229, 0.09)' },
+                        background: brand.primaryMuted,
+                        '&:hover': { background: 'rgba(13, 148, 136, 0.12)' },
                       },
                       '&::before': selected
                         ? {
@@ -525,7 +516,7 @@ export const ChatView = () => {
                             bottom: 8,
                             width: 3,
                             borderRadius: 2,
-                            background: 'linear-gradient(180deg, #6366f1, #4f46e5)',
+                            background: brand.gradients.primary,
                           }
                         : undefined,
                     }}
@@ -627,11 +618,11 @@ export const ChatView = () => {
                   placeItems: 'center',
                   background:
                     'linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(14,165,233,0.18) 100%)',
-                  boxShadow: '0 18px 40px rgba(79,70,229,0.18)',
+                  boxShadow: brand.shadows.primary,
                 }}
                 aria-hidden
               >
-                <AddCommentRoundedIcon sx={{ fontSize: 48, color: '#4f46e5' }} />
+                <AddCommentRoundedIcon sx={{ fontSize: 48, color: brand.primary }} />
               </Box>
               <Typography
                 variant="h5"
@@ -889,7 +880,7 @@ export const ChatView = () => {
                     border: '1px solid transparent',
                     transition: 'border-color 0.2s ease, background 0.2s ease',
                     '&:focus-within': {
-                      borderColor: 'rgba(79,70,229,0.4)',
+                      borderColor: 'rgba(13, 148, 136, 0.35)',
                       bgcolor: '#fff',
                     },
                   }}
@@ -925,15 +916,14 @@ export const ChatView = () => {
                     width: 46,
                     height: 46,
                     color: '#fff',
-                    background:
-                      'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                    boxShadow: '0 10px 24px rgba(79, 70, 229, 0.35)',
-                    transition: 'transform 0.15s ease, box-shadow 0.2s ease',
+                    background: brand.gradients.primary,
+                    boxShadow: brand.shadows.primary,
+                    transition:
+                      'transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease',
                     '&:hover': {
+                      background: brand.gradients.primaryHover,
+                      boxShadow: brand.shadows.primaryHover,
                       transform: 'translateY(-1px)',
-                      boxShadow: '0 14px 28px rgba(79, 70, 229, 0.45)',
-                      background:
-                        'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
                     },
                     '&.Mui-disabled': {
                       background: '#cbd5e1',

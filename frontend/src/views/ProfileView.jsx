@@ -35,6 +35,7 @@ import { chatService } from '../services/chatService'
 import { productService } from '../services/productService'
 import { useAuth } from '../context/AuthContext'
 import { useProfileViewModel } from '../viewmodels/useProfileViewModel'
+import { brand } from '../theme/tokens'
 
 const MAX_BIO_LENGTH = 280
 
@@ -143,7 +144,7 @@ const SectionTitle = ({ icon, title, subtitle }) => (
         display: 'grid',
         placeItems: 'center',
         color: 'primary.main',
-        background: 'rgba(79, 70, 229, 0.1)',
+        background: brand.primaryMuted,
       }}
     >
       {icon}
@@ -275,7 +276,7 @@ export const ProfileView = () => {
           mb: 3,
           border: '1px solid rgba(148, 163, 184, 0.18)',
           background:
-            'linear-gradient(135deg, #312e81 0%, #4f46e5 45%, #0ea5e9 100%)',
+            brand.gradients.hero,
           color: '#fff',
           p: { xs: 3, sm: 4 },
         }}
@@ -438,7 +439,7 @@ export const ProfileView = () => {
           icon={<StorefrontRoundedIcon />}
           label="Annonces publiees"
           value={productsCount}
-          accent="linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)"
+          accent={brand.gradients.primary}
         />
         <StatCard
           icon={<ChatBubbleRoundedIcon />}
@@ -496,7 +497,7 @@ export const ProfileView = () => {
                 height: 132,
                 fontSize: 42,
                 fontWeight: 700,
-                bgcolor: 'rgba(79, 70, 229, 0.1)',
+                bgcolor: brand.primaryMuted,
                 color: 'primary.main',
               }}
             >
@@ -514,8 +515,8 @@ export const ProfileView = () => {
                   width: 40,
                   height: 40,
                   border: '3px solid #fff',
-                  boxShadow: '0 6px 18px rgba(79, 70, 229, 0.45)',
-                  '&:hover': { bgcolor: '#4338ca' },
+                  boxShadow: brand.shadows.primary,
+                  '&:hover': { bgcolor: brand.primaryDark },
                 }}
               >
                 <PhotoCameraRoundedIcon fontSize="small" />
@@ -659,7 +660,7 @@ export const ProfileView = () => {
                   bgcolor: 'rgba(148, 163, 184, 0.18)',
                   '& .MuiLinearProgress-bar': {
                     background:
-                      'linear-gradient(135deg, #6366f1 0%, #0ea5e9 100%)',
+                      brand.gradients.primary,
                   },
                 }}
               />
@@ -758,15 +759,13 @@ export const ProfileView = () => {
                   py: 1.1,
                   fontWeight: 700,
                   color: '#fff',
-                  background:
-                    'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                  boxShadow: '0 10px 22px rgba(79, 70, 229, 0.32)',
+                    background: brand.gradients.primary,
+                  boxShadow: brand.shadows.primary,
                   transition:
                     'transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease',
                   '&:hover': {
-                    background:
-                      'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
-                    boxShadow: '0 14px 28px rgba(79, 70, 229, 0.42)',
+                    background: brand.gradients.primaryHover,
+                    boxShadow: brand.shadows.primaryHover,
                     transform: 'translateY(-1px)',
                   },
                   '&.Mui-disabled': {
